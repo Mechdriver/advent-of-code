@@ -1,9 +1,9 @@
 def get_valid_toboggan_passwords():
-    valid_passwords = []
-    policy_passes = []
     with open("passwords.txt", "r", encoding="utf-8") as input_file:
         data = list(map(lambda line : str(line).strip(), input_file.readlines()))
-        policy_passes = [line.split(' ') for line in data]
+
+    valid_passwords = []
+    policy_passes = [line.split(' ') for line in data]
 
     for policy_pass in policy_passes:
         ranges = policy_pass[0].split('-')
@@ -18,11 +18,10 @@ def get_valid_toboggan_passwords():
     return valid_passwords
 
 def get_valid_passwords():
-    valid_passwords = []
-    policy_passes = []
     with open("passwords.txt", "r", encoding="utf-8") as input_file:
         data = list(map(lambda line : str(line).strip(), input_file.readlines()))
-        policy_passes = [line.split(' ') for line in data]
+    valid_passwords = []
+    policy_passes = [line.split(' ') for line in data]
 
     for policy_pass in policy_passes:
         ranges = policy_pass[0].split('-')
@@ -30,11 +29,8 @@ def get_valid_passwords():
         max = int(ranges[1])
         restricted_char = policy_pass[1][0]
         password = policy_pass[2]
-        char_count = 0
 
-        for let in password:
-            if let == restricted_char:
-                char_count += 1
+        char_count = password.count(restricted_char)
         if char_count >= min and char_count <= max:
             valid_passwords.append(password)
 
