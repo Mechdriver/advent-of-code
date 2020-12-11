@@ -2,6 +2,9 @@ from pprint import pprint
 from copy import deepcopy
 from enum import Enum
 
+SEAT_TOLERANCE_P_1 = 4
+SEAT_TOLERANCE_P_2 = 5
+
 FLOOR = '.'
 EMPTY = 'L'
 FULL = '#'
@@ -19,34 +22,64 @@ class Direction(Enum):
 
 def _check_seats(layout, direction, y, x):
     # Check left
-    if direction == Direction.LEFT and x >= 0 and layout[y][x] == FULL:
-        #print(f'{x} {y}')
-        return 1
+    if direction == Direction.LEFT and x >= 0:
+        if layout[y][x] == FULL:
+            return 1
+        elif layout[y][x] == FLOOR:
+            return _check_seats(layout, Direction.LEFT, y, x - 1)
+
     # Check right
-    if direction == Direction.RIGHT and x < len(layout[y]) and layout[y][x] == FULL:
-        return 1
+    if direction == Direction.RIGHT and x < len(layout[y]):
+        if layout[y][x] == FULL:
+            return 1
+        elif layout[y][x] == FLOOR:
+            return _check_seats(layout, Direction.RIGHT, y, x + 1)
+
     # Check up
-    if direction == Direction.UP and y >= 0 and layout[y][x] == FULL:
-        return 1
+    if direction == Direction.UP and y >= 0:
+        if layout[y][x] == FULL:
+            return 1
+        elif layout[y][x] == FLOOR:
+            return _check_seats(layout, Direction.UP, y - 1, x)
+
     # Check down
-    if direction == Direction.DOWN and y < len(layout) and layout[y][x] == FULL:
-        return 1
+    if direction == Direction.DOWN and y < len(layout):
+        if layout[y][x] == FULL:
+            return 1
+        elif layout[y][x] == FLOOR:
+            return _check_seats(layout, Direction.DOWN, y + 1, x)
+
     # Check up left
-    if direction == Direction.UP_LEFT and y >= 0 and x >= 0 and layout[y][x] == FULL:
-        return 1
+    if direction == Direction.UP_LEFT and y >= 0 and x >= 0:
+        if layout[y][x] == FULL:
+            return 1
+        elif layout[y][x] == FLOOR:
+            return _check_seats(layout, Direction.UP_LEFT, y - 1, x - 1)
+
     # Check up right
-    if direction == Direction.UP_RIGHT and y >= 0 and x < len(layout[y]) and layout[y][x] == FULL:
-        return 1
+    if direction == Direction.UP_RIGHT and y >= 0 and x < len(layout[y]):
+        if layout[y][x] == FULL:
+            return 1
+        elif layout[y][x] == FLOOR:
+            return _check_seats(layout, Direction.UP_RIGHT, y - 1, x + 1)
+
     # Check down left
-    if direction == Direction.DOWN_LEFT and y < len(layout) and x >= 0 and layout[y][x] == FULL:
-        return 1
+    if direction == Direction.DOWN_LEFT and y < len(layout) and x >= 0:
+        if layout[y][x] == FULL:
+            return 1
+        elif layout[y][x] == FLOOR:
+            return _check_seats(layout, Direction.DOWN_LEFT, y + 1, x - 1)
+
     # Check down right
-    if direction == Direction.DOWN_RIGHT and y < len(layout)and x < len(layout[y]) and layout[y][x] == FULL:
-        return 1
+    if direction == Direction.DOWN_RIGHT and y < len(layout)and x < len(layout[y]):
+        if layout[y][x] == FULL:
+            return 1
+        elif layout[y][x] == FLOOR:
+            return _check_seats(layout, Direction.DOWN_RIGHT, y + 1, x + 1)
     return 0
 
 
-def find_occupied_seats():
+def find_occupied_seats(seat_tolerance):
     with open("seat_layout.txt", "r", encoding="utf-8") as input_file:
         next_layout = list(map(lambda line: list(line.strip()), input_file.readlines()))
 
@@ -81,12 +114,9 @@ def find_occupied_seats():
                 if space == EMPTY and adj_seats == 0:
                     next_layout[y][x] = FULL
                     state_changed = True
-                elif space == FULL and adj_seats >= 4:
+                elif space == FULL and adj_seats >= seat_tolerance:
                     next_layout[y][x] = EMPTY
                     state_changed = True
-        #pprint(next_layout)
-        #print()
-        #print()
 
     occupied_seats = 0
     for row in layout:
@@ -95,7 +125,6 @@ def find_occupied_seats():
                 occupied_seats += 1
 
     print(occupied_seats)
-    #pprint(next_layout)
 
 
-find_occupied_seats()
+find_occupied_seats(SEAT_TOLERANCE_P_2)
