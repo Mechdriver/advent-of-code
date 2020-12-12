@@ -1,4 +1,5 @@
 from enum import Enum
+import math
 
 class Compass(Enum):
     N = 0
@@ -25,23 +26,19 @@ action_to_enum = {
 }
 
 
-class Ship():
+class Waypoint():
     def __init__(self):
-        self.heading = Compass.E
-        self.x = 0
-        self.y = 0
+        self.x = 10
+        self.y = 1
 
-    def _calc_rotation(self, degrees):
-        if self.heading.value + degrees < 0:
-            degrees += 360
+    def _calc_rotation(self, degrees, ship_x, ship_y):
+        radians = math.radians(degrees)
+        new_x = ship_x + math.cos(radians) * (self.x - ship_x) + math.sin(radians) * (self.y - ship_y)
+        new_y = ship_y + -math.sin(radians) * (self.x - ship_x) + math.cos(radians) * (self.y - ship_y)
+        self.x = new_x
+        self.y = new_y
 
-        degrees = self.heading.value + degrees
-        if degrees >= 360:
-            degrees -= 360
-
-        self.heading = degrees_to_compass[degrees]
-
-    def calc_movement(self, nav_action):
+    def calc_movement(self, nav_action, ship_x, ship_y):
         action = nav_action[0]
         value = nav_action[1]
 
@@ -53,12 +50,27 @@ class Ship():
             self.x += value
         elif action == Compass.W:
             self.x -= value
-        elif action == Basic.F:
-            self.calc_movement((self.heading, value))
         elif action == Basic.L:
-            self._calc_rotation(value * -1)
+            self._calc_rotation(value * -1, 0, 0)
         elif action == Basic.R:
-            self._calc_rotation(value)
+            self._calc_rotation(value, 0, 0)
+
+
+class Ship():
+    def __init__(self):
+        self.waypoint = Waypoint()
+        self.x = 0
+        self.y = 0
+
+    def calc_movement(self, nav_action):
+        action = nav_action[0]
+        value = nav_action[1]
+
+        if action == Basic.F:
+            self.x += self.waypoint.x * value
+            self.y += self.waypoint.y * value
+        else:
+            self.waypoint.calc_movement(nav_action, self.x, self.y)
 
 
 def find_manhattan_distance():
@@ -66,10 +78,8 @@ def find_manhattan_distance():
         nav_actions = list(map(lambda line: (action_to_enum[line[0]], int(line[1:])), input_file.readlines()))
 
     ship = Ship()
-
     for nav_action in nav_actions:
         ship.calc_movement(nav_action)
+    return int(abs(ship.x) + abs(ship.y))
 
-    print(abs(ship.x) + abs(ship.y))
-
-find_manhattan_distance()
+print(find_manhattan_distance())
