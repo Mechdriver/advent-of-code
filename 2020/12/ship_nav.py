@@ -31,14 +31,14 @@ class Waypoint():
         self.x = 10
         self.y = 1
 
-    def _calc_rotation(self, degrees, ship_x, ship_y):
+    def _calc_rotation(self, degrees):
         radians = math.radians(degrees)
-        new_x = ship_x + math.cos(radians) * (self.x - ship_x) + math.sin(radians) * (self.y - ship_y)
-        new_y = ship_y + -math.sin(radians) * (self.x - ship_x) + math.cos(radians) * (self.y - ship_y)
+        new_x = math.cos(radians) * (self.x) + math.sin(radians) * (self.y)
+        new_y = -math.sin(radians) * (self.x) + math.cos(radians) * (self.y)
         self.x = new_x
         self.y = new_y
 
-    def calc_movement(self, nav_action, ship_x, ship_y):
+    def calc_movement(self, nav_action):
         action = nav_action[0]
         value = nav_action[1]
 
@@ -51,9 +51,9 @@ class Waypoint():
         elif action == Compass.W:
             self.x -= value
         elif action == Basic.L:
-            self._calc_rotation(value * -1, 0, 0)
+            self._calc_rotation(value * -1)
         elif action == Basic.R:
-            self._calc_rotation(value, 0, 0)
+            self._calc_rotation(value)
 
 
 class Ship():
@@ -70,7 +70,7 @@ class Ship():
             self.x += self.waypoint.x * value
             self.y += self.waypoint.y * value
         else:
-            self.waypoint.calc_movement(nav_action, self.x, self.y)
+            self.waypoint.calc_movement(nav_action)
 
 
 def find_manhattan_distance():
