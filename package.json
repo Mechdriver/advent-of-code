@@ -1,0 +1,24 @@
+{
+  "name": "advent-of-code",
+  "version": "0.1",
+  "description": "Repo for my Advent of Code journey.",
+  "main": "index.js",
+  "type": "module",
+  "repository": "git@github.com:Mechdriver/advent-of-code.git",
+  "author": "Zach Behnke",
+  "license": "MIT",
+  "scripts": {
+    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\"",
+    "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\" --quiet"
+  },
+  "dependencies": {
+    "@eslint/js": "^9.16.0",
+    "@types/node": "^22.10.1",
+    "eslint": "^9.16.0",
+    "eslint-config-prettier": "^9.1.0",
+    "prettier": "^3.4.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.2",
+    "typescript-eslint": "^8.16.0"
+  }
+}
