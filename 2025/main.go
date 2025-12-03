@@ -1,7 +1,6 @@
 package main
 
 import (
-	// "fmt"
 	"fmt"
 	"mechdriverAdventOfCode/lobby"
 	// "mechdriverAdventOfCode/gift_shop"
@@ -15,7 +14,7 @@ func main() {
 
 	// summedIds := gift_shop.Part2()
 
-	totalJoltage := lobby.Part1()
+	totalJoltage := lobby.Part2()
 
 	fmt.Printf("Total Joltage: %d\n", totalJoltage)
 }
