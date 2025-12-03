@@ -1,6 +1,7 @@
 package secret_entrance
 
 import (
+	"fmt"
 	"os"
 	"strconv"
 	"strings"
@@ -50,7 +51,7 @@ func Part1() int {
 }
 
 func Part2() int {
-	buffer, err := os.ReadFile("./inputs/day1/example_input.txt")
+	buffer, err := os.ReadFile("./inputs/day1/test_input.txt")
 
 	if err != nil {
 		panic(err)
@@ -70,23 +71,35 @@ func Part2() int {
 			panic(err)
 		}
 
+		password += amount / 100
+		amount %= 100
+
 		if direction == "L" {
 			amount *= -1
 		}
 
-		amount %= 100
+		wasZero := dial == 0
 
 		dial += amount
 
 		if dial < 0 {
 			dial += 100
+
+			if !wasZero {
+				password++
+			}
 		} else if dial > 99 {
 			dial -= 100
-		}
 
-		if dial == 0 {
+			if !wasZero {
+				password++
+			}
+		} else if dial == 0 {
 			password++
 		}
+
+		// fmt.Printf("Input: %s\nDial: %d\nPassword: %d\n\n", line, dial, password)
+
 	}
 
 	return password
