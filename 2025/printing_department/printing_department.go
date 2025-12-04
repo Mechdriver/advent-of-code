@@ -90,6 +90,49 @@ func findAccessibleRolls(grid [][]string) int {
 	return count
 }
 
+func findAllRemovableRolls(grid [][]string) int {
+	updatedGrid := make([][]string, len(grid))
+	count := 0
+	reCheck := true
+
+	for i := range grid {
+		updatedGrid[i] = make([]string, len(grid[i]))
+		copy(updatedGrid[i], grid[i])
+	}
+
+	for reCheck {
+		reCheck = false
+
+		for i := range grid {
+			for j := range grid[i] {
+				if grid[i][j] == "@" {
+					if isAccessible(grid, Point{j, i}) {
+						count++
+						// fmt.Print("x")
+						updatedGrid[i][j] = "."
+						reCheck = true
+					} else {
+						// fmt.Print("@")
+						updatedGrid[i][j] = "@"
+					}
+				} else {
+					// fmt.Print(".")
+					updatedGrid[i][j] = "."
+				}
+			}
+			// fmt.Println()
+		}
+		if reCheck {
+			for i := range updatedGrid {
+				copy(grid[i], updatedGrid[i])
+			}
+		}
+		// fmt.Println("============")
+	}
+
+	return count
+}
+
 func Part1() int {
 	var floorGrid [][]string
 	buffer, err := os.ReadFile("./inputs/day4/test_input.txt")
@@ -107,4 +150,23 @@ func Part1() int {
 	}
 
 	return findAccessibleRolls(floorGrid)
+}
+
+func Part2() int {
+	var floorGrid [][]string
+	buffer, err := os.ReadFile("./inputs/day4/test_input.txt")
+
+	if err != nil {
+		panic(err)
+	}
+
+	inputs := strings.Split(string(buffer), "\n")
+
+	for i := range inputs {
+		if len(inputs[i]) > 0 {
+			floorGrid = append(floorGrid, strings.Split(inputs[i], ""))
+		}
+	}
+
+	return findAllRemovableRolls(floorGrid)
 }

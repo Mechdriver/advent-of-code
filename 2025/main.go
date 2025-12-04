@@ -19,5 +19,5 @@ func main() {
 
 	// fmt.Printf("Total Joltage: %d\n", totalJoltage)
 
-	fmt.Printf("Accessible Rolls: %d", printing_department.Part1())
+	fmt.Printf("Accessible Rolls: %d", printing_department.Part2())
 }
