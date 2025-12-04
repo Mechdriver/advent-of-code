@@ -2,7 +2,8 @@ package main
 
 import (
 	"fmt"
-	"mechdriverAdventOfCode/lobby"
+	// "mechdriverAdventOfCode/lobby"
+	"mechdriverAdventOfCode/printing_department"
 	// "mechdriverAdventOfCode/gift_shop"
 	// "mechdriverAdventOfCode/secret_entrance"
 )
@@ -14,7 +15,9 @@ func main() {
 
 	// summedIds := gift_shop.Part2()
 
-	totalJoltage := lobby.Part2()
+	// totalJoltage := lobby.Part2()
 
-	fmt.Printf("Total Joltage: %d\n", totalJoltage)
+	// fmt.Printf("Total Joltage: %d\n", totalJoltage)
+
+	fmt.Printf("Accessible Rolls: %d", printing_department.Part1())
 }
