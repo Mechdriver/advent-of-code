@@ -22,5 +22,5 @@ func main() {
 
 	// fmt.Printf("Accessible Rolls: %d", printing_department.Part2())
 
-	fmt.Printf("Fresh IDs: %d", cafeteria.Part1())
+	fmt.Printf("Fresh IDs: %d", cafeteria.Part2())
 }
