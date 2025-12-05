@@ -3,7 +3,8 @@ package main
 import (
 	"fmt"
 	// "mechdriverAdventOfCode/lobby"
-	"mechdriverAdventOfCode/printing_department"
+	"mechdriverAdventOfCode/cafeteria"
+	// "mechdriverAdventOfCode/printing_department"
 	// "mechdriverAdventOfCode/gift_shop"
 	// "mechdriverAdventOfCode/secret_entrance"
 )
@@ -19,5 +20,7 @@ func main() {
 
 	// fmt.Printf("Total Joltage: %d\n", totalJoltage)
 
-	fmt.Printf("Accessible Rolls: %d", printing_department.Part2())
+	// fmt.Printf("Accessible Rolls: %d", printing_department.Part2())
+
+	fmt.Printf("Fresh IDs: %d", cafeteria.Part1())
 }
