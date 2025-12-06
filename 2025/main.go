@@ -25,5 +25,5 @@ func main() {
 
 	// fmt.Printf("Fresh IDs: %d", cafeteria.Part2())
 
-	fmt.Println("Homework Answer: ", trash_compactor.Part1())
+	fmt.Println("Homework Answer: ", trash_compactor.Part2())
 }

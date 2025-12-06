@@ -12,12 +12,15 @@ func doHomework(homeWork [][]int, symbols []string) int {
 	homeWorkAnswer := 0
 
 	for j := range homeWork[0] {
+		symbol := symbols[j]
 		val := 0
-		if symbols[j] == "*" {
+
+		if symbol == "*" {
 			val = 1
 		}
+
 		for i := range homeWork {
-			switch symbols[j] {
+			switch symbol {
 			case "*":
 				val *= homeWork[i][j]
 			case "+":
@@ -25,13 +28,38 @@ func doHomework(homeWork [][]int, symbols []string) int {
 			}
 
 			if i > 0 {
-				fmt.Print(" ", symbols[j], " ")
+				fmt.Print(" ", symbol, " ")
 			}
 
 			fmt.Print(homeWork[i][j])
 		}
 		fmt.Print(" = ", val)
 		fmt.Println("\n=========")
+		homeWorkAnswer += val
+	}
+
+	return homeWorkAnswer
+}
+
+func doCephalopodHomework(homework [][]int, symbols []string) int {
+	homeWorkAnswer := 0
+
+	for i, problem := range homework {
+		symbol := symbols[i]
+		val := 0
+
+		if symbol == "*" {
+			val = 1
+		}
+
+		for _, num := range problem {
+			switch symbol {
+			case "*":
+				val *= num
+			case "+":
+				val += num
+			}
+		}
 		homeWorkAnswer += val
 	}
 
@@ -76,4 +104,56 @@ func Part1() int {
 	symbols = regex.Split(strings.TrimSpace(lines[len(lines)-1]), -1)
 
 	return doHomework(homeWork, symbols)
+}
+
+func Part2() int {
+	buffer, err := os.ReadFile("./inputs/day6/test_input.txt")
+
+	if err != nil {
+		panic(err)
+	}
+
+	lines := strings.Split(string(buffer), "\n")
+	// Drop last empty line
+	lines = lines[:len(lines)-1]
+
+	var homeWorkGrid [][]string
+	var homeWork [][]int
+
+	allWhiteSpace := "\\s+"
+	regex := regexp.MustCompile(allWhiteSpace)
+	symbols := regex.Split(strings.TrimSpace(lines[len(lines)-1]), -1)
+
+	for i := 0; i < len(lines)-1; i++ {
+		homeWorkGrid = append(homeWorkGrid, strings.Split(lines[i], ""))
+	}
+
+	var numberLine = make([]int, 0)
+
+	for j := range homeWorkGrid[0] {
+		valString := ""
+
+		for i := range homeWorkGrid {
+			if homeWorkGrid[i][j] != " " {
+				valString += homeWorkGrid[i][j]
+			}
+		}
+
+		if valString != "" {
+			val, err := strconv.Atoi(valString)
+
+			if err != nil {
+				panic(err)
+			}
+
+			numberLine = append(numberLine, val)
+		} else {
+			homeWork = append(homeWork, numberLine)
+			numberLine = make([]int, 0)
+		}
+	}
+
+	homeWork = append(homeWork, numberLine)
+
+	return doCephalopodHomework(homeWork, symbols)
 }
