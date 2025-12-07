@@ -4,7 +4,8 @@ import (
 	"fmt"
 	// "mechdriverAdventOfCode/lobby"
 	// "mechdriverAdventOfCode/cafeteria"
-	"mechdriverAdventOfCode/trash_compactor"
+	"mechdriverAdventOfCode/laboratories"
+	// "mechdriverAdventOfCode/trash_compactor"
 	// "mechdriverAdventOfCode/printing_department"
 	// "mechdriverAdventOfCode/gift_shop"
 	// "mechdriverAdventOfCode/secret_entrance"
@@ -25,5 +26,7 @@ func main() {
 
 	// fmt.Printf("Fresh IDs: %d", cafeteria.Part2())
 
-	fmt.Println("Homework Answer: ", trash_compactor.Part2())
+	// fmt.Println("Homework Answer: ", trash_compactor.Part2())
+
+	fmt.Println("Timelines: ", laboratories.Part2())
 }
