@@ -31,5 +31,5 @@ func main() {
 
 	// fmt.Println("Timelines: ", laboratories.Part2())
 
-	fmt.Println("Circuit size: ", playground.Part1())
+	fmt.Println("X-Coord product: ", playground.Part2())
 }
