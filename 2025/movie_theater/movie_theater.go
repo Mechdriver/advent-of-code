@@ -1,9 +1,7 @@
 package movie_theater
 
 import (
-	"fmt"
 	"os"
-	"sort"
 	"strconv"
 	"strings"
 )
@@ -11,6 +9,11 @@ import (
 type Point struct {
 	x int
 	y int
+}
+
+type Boundary struct {
+	min int
+	max int
 }
 
 func calcArea(pointA Point, pointB Point) int {
@@ -46,44 +49,19 @@ func findLargestArea(points []Point) int {
 	return maxArea
 }
 
-func drawLine(floorGrid [][]string, pointA Point, pointB Point) {
-	ndx := pointA.x
-	for ndx < pointB.x {
-		floorGrid[pointA.y][ndx] = "X"
-		ndx++
-	}
-
-	ndx = pointA.x
-	for ndx > pointB.x {
-		floorGrid[pointA.y][ndx] = "X"
-		ndx--
-	}
-
-	ndx = pointA.y
-	for ndx < pointB.y {
-		floorGrid[ndx][pointA.x] = "X"
-		ndx++
-	}
-
-	ndx = pointA.y
-	for ndx > pointB.y {
-		floorGrid[ndx][pointA.x] = "X"
-		ndx--
-	}
-}
-
-func addToBounds(key int, val int, bounds map[int][]int) {
+func addToBounds(key int, val int, bounds map[int]Boundary) {
 	_, okX := bounds[key]
 
 	if okX {
-		bounds[key] = append(bounds[key], val)
-		sort.Ints(bounds[key])
+		boundary := bounds[key]
+		newBoundary := Boundary{min(boundary.min, val), max(boundary.max, val)}
+		bounds[key] = newBoundary
 	} else {
-		bounds[key] = []int{val}
+		bounds[key] = Boundary{val, val}
 	}
 }
 
-func drawBoundaryLine(xToYBounds map[int][]int, yToXBounds map[int][]int, pointA Point, pointB Point) {
+func drawBoundaryLine(xToYBounds map[int]Boundary, yToXBounds map[int]Boundary, pointA Point, pointB Point) {
 	ndx := pointA.x
 	for ndx <= pointB.x {
 		addToBounds(ndx, pointA.y, xToYBounds)
@@ -117,17 +95,24 @@ func isBetween(num int, min int, max int) bool {
 	return num >= min && num <= max
 }
 
-func isLineWithinBounds(xToYBounds map[int][]int, yToXBounds map[int][]int, pointA Point, pointB Point) bool {
+func isPointWithinBounds(xToYBounds map[int]Boundary, yToXBounds map[int]Boundary, point Point) bool {
+	xBounds := yToXBounds[point.y]
+	yBounds := xToYBounds[point.x]
+
+	return isBetween(point.x, xBounds.min, xBounds.max) && isBetween(point.y, yBounds.min, yBounds.max)
+}
+
+func isLineWithinBounds(xToYBounds map[int]Boundary, yToXBounds map[int]Boundary, pointA Point, pointB Point) bool {
 	ndx := pointA.x
 	for ndx < pointB.x {
 		xBounds := yToXBounds[pointA.y]
 		yBounds := xToYBounds[ndx]
 
-		if !isBetween(ndx, xBounds[0], xBounds[len(xBounds)-1]) {
+		if !isBetween(ndx, xBounds.min, xBounds.max) {
 			return false
 		}
 
-		if !isBetween(pointA.y, yBounds[0], yBounds[len(yBounds)-1]) {
+		if !isBetween(pointA.y, yBounds.min, yBounds.max) {
 			return false
 		}
 		ndx++
@@ -138,11 +123,11 @@ func isLineWithinBounds(xToYBounds map[int][]int, yToXBounds map[int][]int, poin
 		xBounds := yToXBounds[pointA.y]
 		yBounds := xToYBounds[ndx]
 
-		if !isBetween(ndx, xBounds[0], xBounds[len(xBounds)-1]) {
+		if !isBetween(ndx, xBounds.min, xBounds.max) {
 			return false
 		}
 
-		if !isBetween(pointA.y, yBounds[0], yBounds[len(yBounds)-1]) {
+		if !isBetween(pointA.y, yBounds.min, yBounds.max) {
 			return false
 		}
 		ndx--
@@ -153,11 +138,11 @@ func isLineWithinBounds(xToYBounds map[int][]int, yToXBounds map[int][]int, poin
 		xBounds := yToXBounds[ndx]
 		yBounds := xToYBounds[pointA.x]
 
-		if !isBetween(pointA.x, xBounds[0], xBounds[len(xBounds)-1]) {
+		if !isBetween(pointA.x, xBounds.min, xBounds.max) {
 			return false
 		}
 
-		if !isBetween(ndx, yBounds[0], yBounds[len(yBounds)-1]) {
+		if !isBetween(ndx, yBounds.min, yBounds.max) {
 			return false
 		}
 		ndx++
@@ -168,11 +153,11 @@ func isLineWithinBounds(xToYBounds map[int][]int, yToXBounds map[int][]int, poin
 		xBounds := yToXBounds[ndx]
 		yBounds := xToYBounds[pointA.x]
 
-		if !isBetween(pointA.x, xBounds[0], xBounds[len(xBounds)-1]) {
+		if !isBetween(pointA.x, xBounds.min, xBounds.max) {
 			return false
 		}
 
-		if !isBetween(ndx, yBounds[0], yBounds[len(yBounds)-1]) {
+		if !isBetween(ndx, yBounds.min, yBounds.max) {
 			return false
 		}
 		ndx--
@@ -181,20 +166,9 @@ func isLineWithinBounds(xToYBounds map[int][]int, yToXBounds map[int][]int, poin
 	return true
 }
 
-func getBoundaryMaps(points []Point) (map[int][]int, map[int][]int) {
-	xToYBounds := make(map[int][]int)
-	yToXBounds := make(map[int][]int)
-
-	for _, point := range points {
-		addToBounds(point.x, point.y, xToYBounds)
-		addToBounds(point.y, point.x, yToXBounds)
-	}
-
-	return xToYBounds, yToXBounds
-}
-
-func createShapeBoundary(points []Point) (map[int][]int, map[int][]int) {
-	xToYBounds, yToXBounds := getBoundaryMaps(points)
+func createShapeBoundary(points []Point) (map[int]Boundary, map[int]Boundary) {
+	xToYBounds := make(map[int]Boundary)
+	yToXBounds := make(map[int]Boundary)
 
 	for i := 1; i < len(points); i++ {
 		pointA := points[i-1]
@@ -222,90 +196,31 @@ func findLargestGreenRedArea(points []Point) int {
 			c3 := Point{c2.x, c1.y}
 			c4 := Point{c1.x, c2.y}
 
-			rectangle := [4]Point{c1, c2, c3, c4}
-			isValid := true
+			if isPointWithinBounds(xToYBounds, yToXBounds, c3) && isPointWithinBounds(xToYBounds, yToXBounds, c4) {
+				rectangle := [5]Point{c1, c2, c3, c4, c1}
+				isValid := true
 
-			for i := 1; i < len(rectangle); i++ {
-				pointA := rectangle[i-1]
-				pointB := rectangle[i]
+				for i := 1; i < len(rectangle); i++ {
+					pointA := rectangle[i-1]
+					pointB := rectangle[i]
 
-				if !isLineWithinBounds(xToYBounds, yToXBounds, pointA, pointB) {
-					isValid = false
-					break
+					if !isLineWithinBounds(xToYBounds, yToXBounds, pointA, pointB) {
+						isValid = false
+						break
+					}
 				}
-			}
 
-			pointA := rectangle[len(rectangle)-1]
-			pointB := rectangle[0]
-
-			if !isLineWithinBounds(xToYBounds, yToXBounds, pointA, pointB) {
-				isValid = false
-			}
-
-			if isValid {
-				area := calcArea(points[i], points[j])
-				if area > maxArea {
-					maxArea = area
-					// fmt.Println("Max Valid: ", points[i], points[j])
+				if isValid {
+					area := calcArea(points[i], points[j])
+					if area > maxArea {
+						maxArea = area
+					}
 				}
-			} else {
 			}
 		}
 	}
 
 	return maxArea
-}
-
-func getMaxXandY(points []Point) (int, int) {
-	maxX := 0
-	maxY := 0
-
-	for _, point := range points {
-		if point.x > maxX {
-			maxX = point.x
-		}
-
-		if point.y > maxY {
-			maxY = point.y
-		}
-	}
-
-	return maxX, maxY
-}
-
-func buildTiles(points []Point) [][]string {
-	floorGrid := make([][]string, 0)
-	maxX, maxY := getMaxXandY(points)
-
-	for range maxY + 1 {
-		var floorRow []string
-
-		for range maxX + 1 {
-			floorRow = append(floorRow, ".")
-		}
-		floorGrid = append(floorGrid, floorRow)
-	}
-
-	for i := 1; i < len(points); i++ {
-		pointA := points[i-1]
-		pointB := points[i]
-
-		drawLine(floorGrid, pointA, pointB)
-
-		floorGrid[pointA.y][pointA.x] = "#"
-	}
-
-	pointA := points[len(points)-1]
-	pointB := points[0]
-
-	drawLine(floorGrid, pointA, pointB)
-	floorGrid[pointA.y][pointA.x] = "#"
-
-	for _, row := range floorGrid {
-		fmt.Println(row)
-	}
-
-	return floorGrid
 }
 
 func parseInput() []Point {
@@ -354,8 +269,6 @@ func Part1() int {
 
 func Part2() int {
 	points := parseInput()
-
-	// buildTiles(points)
 
 	return findLargestGreenRedArea(points)
 }
